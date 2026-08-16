@@ -14,7 +14,10 @@ input {
   font-family: inherit;
 }
 
-/* Main */
+
+/* =========================
+   APP
+========================= */
 
 .app {
   min-height: 100vh;
@@ -22,7 +25,9 @@ input {
 }
 
 
-/* Search */
+/* =========================
+   SEARCH
+========================= */
 
 .search-container {
   width: 650px;
@@ -33,6 +38,7 @@ input {
 
 .search-box {
   height: 56px;
+
   background: white;
 
   border: 1px solid #dcdcdc;
@@ -47,7 +53,7 @@ input {
     0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.search-icon {
+.search-label {
   color: #777;
   font-size: 13px;
   margin-right: 12px;
@@ -72,7 +78,9 @@ input {
 }
 
 
-/* Search Results */
+/* =========================
+   SEARCH RESULTS
+========================= */
 
 .results {
   position: absolute;
@@ -101,7 +109,9 @@ input {
   padding: 14px 18px;
 
   display: flex;
+
   justify-content: space-between;
+
   align-items: center;
 
   cursor: pointer;
@@ -121,6 +131,7 @@ input {
 
 .stock-info {
   display: flex;
+
   flex-direction: column;
 
   gap: 5px;
@@ -133,7 +144,9 @@ input {
   font-weight: 500;
 
   white-space: nowrap;
+
   overflow: hidden;
+
   text-overflow: ellipsis;
 }
 
@@ -169,7 +182,9 @@ input {
 }
 
 
-/* Selected Stock */
+/* =========================
+   SELECTED STOCK
+========================= */
 
 .selected-stock {
   width: 650px;
@@ -262,7 +277,9 @@ input {
 }
 
 
-/* Portfolio */
+/* =========================
+   PORTFOLIO
+========================= */
 
 .portfolio {
   width: 900px;
@@ -302,7 +319,9 @@ input {
 }
 
 
-/* Portfolio Summary */
+/* =========================
+   PORTFOLIO SUMMARY
+========================= */
 
 .portfolio-summary {
   display: flex;
@@ -343,7 +362,9 @@ input {
 }
 
 
-/* Portfolio List */
+/* =========================
+   PORTFOLIO LIST
+========================= */
 
 .portfolio-list {
   display: flex;
@@ -352,9 +373,6 @@ input {
 
   gap: 10px;
 }
-
-
-/* Portfolio Stock */
 
 .portfolio-stock {
   min-height: 90px;
@@ -401,7 +419,9 @@ input {
   font-size: 13px;
 
   white-space: nowrap;
+
   overflow: hidden;
+
   text-overflow: ellipsis;
 }
 
@@ -449,7 +469,9 @@ input {
 }
 
 
-/* Empty Portfolio */
+/* =========================
+   EMPTY PORTFOLIO
+========================= */
 
 .empty-portfolio {
   background: white;
@@ -478,7 +500,9 @@ input {
 }
 
 
-/* Analyze Button */
+/* =========================
+   ANALYZE BUTTON
+========================= */
 
 .analyze-button {
   display: block;
@@ -513,7 +537,9 @@ input {
 }
 
 
-/* Analysis */
+/* =========================
+   ANALYSIS CARD
+========================= */
 
 .analysis-card {
   width: 100%;
@@ -533,7 +559,7 @@ input {
 }
 
 .analysis-header {
-  padding: 18px 22px;
+  padding: 20px 22px;
 
   border-bottom: 1px solid #eee;
 
@@ -545,22 +571,134 @@ input {
 }
 
 .analysis-header h2 {
-  margin: 0;
+  margin: 0 0 5px;
 
   font-size: 20px;
 }
 
-.analysis-header span {
+.analysis-header p {
+  margin: 0;
+
   color: #777;
 
   font-size: 13px;
 }
 
-.analysis-content {
-  padding: 22px;
+.analysis-header > span {
+  color: #777;
+
+  font-size: 13px;
 }
 
-.analysis-content pre {
+
+/* =========================
+   STOCK ANALYSIS
+========================= */
+
+.stock-analysis {
+  padding: 25px;
+
+  border-bottom: 1px solid #eee;
+}
+
+.stock-analysis:last-child {
+  border-bottom: none;
+}
+
+.stock-analysis-header {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: flex-start;
+
+  margin-bottom: 22px;
+}
+
+.stock-analysis-header h3 {
+  margin: 0 0 5px;
+
+  font-size: 20px;
+}
+
+.stock-analysis-header p {
+  margin: 0;
+
+  color: #777;
+
+  font-size: 14px;
+}
+
+.stock-analysis-header > span {
+  color: #777;
+
+  font-size: 13px;
+}
+
+
+/* =========================
+   NEWS
+========================= */
+
+.news-section {
+  margin-bottom: 25px;
+}
+
+.news-section h4,
+.fingpt-analysis h4 {
+  margin: 0 0 12px;
+
+  font-size: 15px;
+}
+
+.news-item {
+  padding: 12px 0;
+
+  border-bottom: 1px solid #eee;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+.news-item:last-child {
+  border-bottom: none;
+}
+
+.news-item strong {
+  font-size: 14px;
+
+  line-height: 1.5;
+}
+
+.news-item small {
+  color: #888;
+
+  font-size: 12px;
+}
+
+.no-news {
+  color: #777;
+
+  font-size: 14px;
+}
+
+
+/* =========================
+   FINGPT
+========================= */
+
+.fingpt-analysis {
+  background: #f7f8fa;
+
+  border-radius: 7px;
+
+  padding: 18px;
+}
+
+.fingpt-analysis pre {
   margin: 0;
 
   white-space: pre-wrap;
@@ -577,7 +715,9 @@ input {
 }
 
 
-/* Responsive */
+/* =========================
+   RESPONSIVE
+========================= */
 
 @media (max-width: 700px) {
 
@@ -625,6 +765,7 @@ input {
 
   .portfolio-stock-info {
     width: 100%;
+
     flex: none;
   }
 
@@ -637,4 +778,15 @@ input {
     margin-left: auto;
   }
 
+  .stock-analysis-header {
+    flex-direction: column;
+
+    gap: 10px;
+  }
+
+  .analysis-header {
+    align-items: flex-start;
+
+    gap: 10px;
+  }
 }

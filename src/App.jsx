@@ -6,12 +6,15 @@ function App() {
   const [search, setSearch] = useState("");
   const [selectedStock, setSelectedStock] = useState(null);
   const [quantity, setQuantity] = useState("");
+
   const [portfolio, setPortfolio] = useState([]);
 
   const [analysis, setAnalysis] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Search stocks
+  /*
+   * Search stocks
+   */
   const results =
     search.trim() === ""
       ? []
@@ -20,21 +23,30 @@ function App() {
             const query = search.toLowerCase();
 
             return (
-              stock.name.toLowerCase().includes(query) ||
-              stock.symbol.toLowerCase().includes(query)
+              String(stock.name || "")
+                .toLowerCase()
+                .includes(query) ||
+              String(stock.symbol || "")
+                .toLowerCase()
+                .includes(query)
             );
           })
           .slice(0, 10);
 
-  // Select stock from search results
+  /*
+   * Select stock
+   */
   const selectStock = (stock) => {
     setSelectedStock(stock);
     setSearch(stock.name);
   };
 
-  // Add stock to portfolio
+  /*
+   * Add stock to portfolio
+   */
   const addToPortfolio = () => {
     if (!selectedStock) {
+      alert("Please select a stock.");
       return;
     }
 
@@ -66,8 +78,6 @@ function App() {
         {
           symbol: selectedStock.symbol,
           name: selectedStock.name,
-          exchange: selectedStock.exchange,
-          yahooSymbol: selectedStock.yahooSymbol,
           quantity: qty,
         },
       ]);
@@ -78,29 +88,40 @@ function App() {
     setSelectedStock(null);
   };
 
-  // Remove stock
+  /*
+   * Remove stock
+   */
   const removeStock = (symbol) => {
     setPortfolio(
-      portfolio.filter((stock) => stock.symbol !== symbol)
+      portfolio.filter(
+        (stock) => stock.symbol !== symbol
+      )
     );
   };
 
-  // Total quantity
+  /*
+   * Total quantity
+   *
+   * NOTE:
+   * This is only a temporary allocation calculation.
+   *
+   * Later we should calculate allocation using
+   * actual stock market value:
+   *
+   * quantity × current price
+   */
   const totalQuantity = portfolio.reduce(
     (total, stock) => total + stock.quantity,
     0
   );
 
   /*
-    FINGPT ANALYSIS
-
-    Replace this URL with your actual ngrok URL.
-
-    Example:
-
-    https://abc123.ngrok-free.app/analyze
-  */
-
+   * Analyze portfolio using FinGPT backend
+   *
+   * IMPORTANT:
+   * Replace the URL below with your current
+   * ngrok URL.
+   */
   const analyzePortfolio = async () => {
     if (portfolio.length === 0) {
       alert("Add at least one stock to your portfolio.");
@@ -111,28 +132,8 @@ function App() {
     setAnalysis(null);
 
     try {
-      /*
-        Temporary test news.
-
-        We are using this only to test:
-        React -> ngrok -> Flask -> FinGPT
-
-        Later we will replace this with your
-        real news-fetching code.
-      */
-
-      const stock = portfolio[0];
-
-      const news = `
-        ${stock.name} reported strong quarterly results.
-        Revenue increased compared with the previous year.
-        The company announced new business contracts
-        and highlighted strong demand for artificial
-        intelligence and cloud services.
-      `;
-
       const response = await fetch(
-        "https://unfunded-proven-caretaker.ngrok-free.dev/analyze",
+        "https://unfunded-proven-caretaker.ngrok-free.dev/analyze-portfolio ",
         {
           method: "POST",
 
@@ -141,8 +142,7 @@ function App() {
           },
 
           body: JSON.stringify({
-            company: stock.name,
-            news: news,
+            portfolio: portfolio,
           }),
         }
       );
@@ -155,14 +155,25 @@ function App() {
 
       const data = await response.json();
 
-      console.log("FinGPT response:", data);
+      console.log("FinGPT API response:");
+      console.log(data);
 
-      setAnalysis(data.analysis);
+      if (!data.success) {
+        throw new Error(
+          data.error || "Portfolio analysis failed."
+        );
+      }
+
+      setAnalysis(data.results);
+
     } catch (error) {
-      console.error("FinGPT error:", error);
+      console.error(
+        "Portfolio analysis error:",
+        error
+      );
 
       alert(
-        "Could not connect to the FinGPT server. Make sure your Colab server and ngrok tunnel are running."
+        "Could not connect to the FinGPT server. Make sure Colab and ngrok are running."
       );
     } finally {
       setLoading(false);
@@ -172,13 +183,15 @@ function App() {
   return (
     <div className="app">
 
-      {/* Search Section */}
+      {/* =========================
+          SEARCH
+      ========================== */}
 
       <div className="search-container">
 
         <div className="search-box">
 
-          <span className="search-icon">
+          <span className="search-label">
             Search
           </span>
 
@@ -194,6 +207,7 @@ function App() {
 
         </div>
 
+
         {/* Search Results */}
 
         {results.length > 0 && (
@@ -205,7 +219,9 @@ function App() {
               <div
                 className="stock-item"
                 key={stock.symbol}
-                onClick={() => selectStock(stock)}
+                onClick={() =>
+                  selectStock(stock)
+                }
               >
 
                 <div className="stock-info">
@@ -232,18 +248,22 @@ function App() {
 
         )}
 
-        {search && results.length === 0 && (
 
-          <div className="no-results">
-            No stocks found
-          </div>
+        {search &&
+          results.length === 0 && (
 
-        )}
+            <div className="no-results">
+              No stocks found
+            </div>
+
+          )}
 
       </div>
 
 
-      {/* Selected Stock */}
+      {/* =========================
+          SELECTED STOCK
+      ========================== */}
 
       {selectedStock && (
 
@@ -271,6 +291,7 @@ function App() {
 
           </div>
 
+
           <div className="quantity-section">
 
             <input
@@ -283,7 +304,9 @@ function App() {
               }
             />
 
-            <button onClick={addToPortfolio}>
+            <button
+              onClick={addToPortfolio}
+            >
               Add to Portfolio
             </button>
 
@@ -294,18 +317,24 @@ function App() {
       )}
 
 
-      {/* Portfolio */}
+      {/* =========================
+          PORTFOLIO
+      ========================== */}
 
       <div className="portfolio">
 
         <div className="portfolio-header">
 
           <div>
-            <h1>My Portfolio</h1>
+
+            <h1>
+              My Portfolio
+            </h1>
 
             <p>
               Manage your stock holdings
             </p>
+
           </div>
 
           <span>
@@ -314,6 +343,8 @@ function App() {
 
         </div>
 
+
+        {/* Empty portfolio */}
 
         {portfolio.length === 0 ? (
 
@@ -324,8 +355,8 @@ function App() {
             </h3>
 
             <p>
-              Search for a stock above and add it
-              to your portfolio.
+              Search for a stock above and add
+              it to your portfolio.
             </p>
 
           </div>
@@ -334,7 +365,7 @@ function App() {
 
           <>
 
-            {/* Portfolio Summary */}
+            {/* Portfolio summary */}
 
             <div className="portfolio-summary">
 
@@ -349,6 +380,7 @@ function App() {
                 </strong>
 
               </div>
+
 
               <div className="summary-card">
 
@@ -365,7 +397,7 @@ function App() {
             </div>
 
 
-            {/* Portfolio Stocks */}
+            {/* Portfolio stocks */}
 
             <div className="portfolio-list">
 
@@ -399,6 +431,7 @@ function App() {
 
                     </div>
 
+
                     <div className="holding">
 
                       <span>
@@ -410,6 +443,7 @@ function App() {
                       </strong>
 
                     </div>
+
 
                     <div className="allocation">
 
@@ -423,10 +457,13 @@ function App() {
 
                     </div>
 
+
                     <button
                       className="remove"
                       onClick={() =>
-                        removeStock(stock.symbol)
+                        removeStock(
+                          stock.symbol
+                        )
                       }
                     >
                       Remove
@@ -435,26 +472,31 @@ function App() {
                   </div>
 
                 );
-
               })}
 
             </div>
 
 
-            {/* Analyze Portfolio */}
+            {/* =========================
+                ANALYZE PORTFOLIO
+            ========================== */}
 
             <button
               className="analyze-button"
               onClick={analyzePortfolio}
               disabled={loading}
             >
+
               {loading
                 ? "Analyzing Portfolio..."
                 : "Analyze Portfolio"}
+
             </button>
 
 
-            {/* FinGPT Result */}
+            {/* =========================
+                ANALYSIS RESULT
+            ========================== */}
 
             {analysis && (
 
@@ -462,9 +504,18 @@ function App() {
 
                 <div className="analysis-header">
 
-                  <h2>
-                    Portfolio Analysis
-                  </h2>
+                  <div>
+
+                    <h2>
+                      Portfolio Analysis
+                    </h2>
+
+                    <p>
+                      Recent market news and
+                      FinGPT analysis
+                    </p>
+
+                  </div>
 
                   <span>
                     FinGPT
@@ -472,13 +523,100 @@ function App() {
 
                 </div>
 
-                <div className="analysis-content">
 
-                  <pre>
-                    {analysis}
-                  </pre>
+                {analysis.map((stock) => (
 
-                </div>
+                  <div
+                    className="stock-analysis"
+                    key={stock.symbol}
+                  >
+
+                    {/* Stock header */}
+
+                    <div className="stock-analysis-header">
+
+                      <div>
+
+                        <h3>
+                          {stock.symbol}
+                        </h3>
+
+                        <p>
+                          {stock.company}
+                        </p>
+
+                      </div>
+
+                      <span>
+                        Quantity: {stock.quantity}
+                      </span>
+
+                    </div>
+
+
+                    {/* News */}
+
+                    <div className="news-section">
+
+                      <h4>
+                        Recent News
+                      </h4>
+
+
+                      {stock.news &&
+                      stock.news.length > 0 ? (
+
+                        stock.news.map(
+                          (article, index) => (
+
+                            <div
+                              className="news-item"
+                              key={index}
+                            >
+
+                              <strong>
+                                {article.title}
+                              </strong>
+
+                              <small>
+                                {article.source}
+                                {" | "}
+                                {article.posted}
+                              </small>
+
+                            </div>
+
+                          )
+                        )
+
+                      ) : (
+
+                        <p className="no-news">
+                          No recent news found.
+                        </p>
+
+                      )}
+
+                    </div>
+
+
+                    {/* FinGPT */}
+
+                    <div className="fingpt-analysis">
+
+                      <h4>
+                        FinGPT Analysis
+                      </h4>
+
+                      <pre>
+                        {stock.analysis}
+                      </pre>
+
+                    </div>
+
+                  </div>
+
+                ))}
 
               </div>
 
