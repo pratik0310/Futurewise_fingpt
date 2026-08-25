@@ -6,44 +6,28 @@ function App() {
   const [search, setSearch] = useState("");
   const [selectedStock, setSelectedStock] = useState(null);
   const [quantity, setQuantity] = useState("");
-
   const [portfolio, setPortfolio] = useState([]);
-
   const [analysis, setAnalysis] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  /*
-   * Search stocks
-   */
   const results =
     search.trim() === ""
       ? []
       : stocks
           .filter((stock) => {
             const query = search.toLowerCase();
-
             return (
-              String(stock.name || "")
-                .toLowerCase()
-                .includes(query) ||
-              String(stock.symbol || "")
-                .toLowerCase()
-                .includes(query)
+              String(stock.name || "").toLowerCase().includes(query) ||
+              String(stock.symbol || "").toLowerCase().includes(query)
             );
           })
           .slice(0, 10);
 
-  /*
-   * Select stock
-   */
   const selectStock = (stock) => {
     setSelectedStock(stock);
     setSearch(stock.name);
   };
 
-  /*
-   * Add stock to portfolio
-   */
   const addToPortfolio = () => {
     if (!selectedStock) {
       alert("Please select a stock.");
@@ -65,10 +49,7 @@ function App() {
       setPortfolio(
         portfolio.map((item) =>
           item.symbol === selectedStock.symbol
-            ? {
-                ...item,
-                quantity: item.quantity + qty,
-              }
+            ? { ...item, quantity: item.quantity + qty }
             : item
         )
       );
@@ -88,40 +69,15 @@ function App() {
     setSelectedStock(null);
   };
 
-  /*
-   * Remove stock
-   */
   const removeStock = (symbol) => {
-    setPortfolio(
-      portfolio.filter(
-        (stock) => stock.symbol !== symbol
-      )
-    );
+    setPortfolio(portfolio.filter((stock) => stock.symbol !== symbol));
   };
 
-  /*
-   * Total quantity
-   *
-   * NOTE:
-   * This is only a temporary allocation calculation.
-   *
-   * Later we should calculate allocation using
-   * actual stock market value:
-   *
-   * quantity × current price
-   */
   const totalQuantity = portfolio.reduce(
     (total, stock) => total + stock.quantity,
     0
   );
 
-  /*
-   * Analyze portfolio using FinGPT backend
-   *
-   * IMPORTANT:
-   * Replace the URL below with your current
-   * ngrok URL.
-   */
   const analyzePortfolio = async () => {
     if (portfolio.length === 0) {
       alert("Add at least one stock to your portfolio.");
@@ -133,14 +89,12 @@ function App() {
 
     try {
       const response = await fetch(
-        "https://unfunded-proven-caretaker.ngrok-free.dev/analyze-portfolio ",
+        "https://unfunded-proven-caretaker.ngrok-free.dev/analyze-portfolio",
         {
           method: "POST",
-
           headers: {
             "Content-Type": "application/json",
           },
-
           body: JSON.stringify({
             portfolio: portfolio,
           }),
@@ -148,9 +102,7 @@ function App() {
       );
 
       if (!response.ok) {
-        throw new Error(
-          `API request failed: ${response.status}`
-        );
+        throw new Error(`API request failed: ${response.status}`);
       }
 
       const data = await response.json();
@@ -159,19 +111,12 @@ function App() {
       console.log(data);
 
       if (!data.success) {
-        throw new Error(
-          data.error || "Portfolio analysis failed."
-        );
+        throw new Error(data.error || "Portfolio analysis failed.");
       }
 
       setAnalysis(data.results);
-
     } catch (error) {
-      console.error(
-        "Portfolio analysis error:",
-        error
-      );
-
+      console.error("Portfolio analysis error:", error);
       alert(
         "Could not connect to the FinGPT server. Make sure Colab and ngrok are running."
       );
@@ -182,452 +127,210 @@ function App() {
 
   return (
     <div className="app">
-
-      {/* =========================
-          SEARCH
-      ========================== */}
-
+      {/* Search Section */}
       <div className="search-container">
-
         <div className="search-box">
-
-          <span className="search-label">
-            Search
-          </span>
-
+          <span className="search-label">Search Stocks</span>
           <input
             type="text"
-            placeholder="Search stocks..."
+            placeholder="Type company name or symbol..."
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
               setSelectedStock(null);
             }}
           />
-
         </div>
 
-
-        {/* Search Results */}
-
         {results.length > 0 && (
-
           <div className="results">
-
             {results.map((stock) => (
-
               <div
                 className="stock-item"
                 key={stock.symbol}
-                onClick={() =>
-                  selectStock(stock)
-                }
+                onClick={() => selectStock(stock)}
               >
-
                 <div className="stock-info">
-
-                  <div className="stock-name">
-                    {stock.name}
-                  </div>
-
-                  <div className="stock-symbol">
-                    {stock.symbol}
-                  </div>
-
+                  <div className="stock-name">{stock.name}</div>
+                  <div className="stock-symbol">{stock.symbol}</div>
                 </div>
-
-                <span className="exchange">
-                  NSE
-                </span>
-
+                <span className="exchange">NSE</span>
               </div>
-
             ))}
-
           </div>
-
         )}
 
-
-        {search &&
-          results.length === 0 && (
-
-            <div className="no-results">
-              No stocks found
-            </div>
-
-          )}
-
+        {search && results.length === 0 && (
+          <div className="no-results">
+            <span className="no-results-query">"{search}"</span>
+            <span> did not match any stocks.</span>
+            <span className="no-results-hint">Try a different company name or symbol.</span>
+          </div>
+        )}
       </div>
 
-
-      {/* =========================
-          SELECTED STOCK
-      ========================== */}
-
+      {/* Selected Stock */}
       {selectedStock && (
-
         <div className="selected-stock">
-
-          <h2>
-            {selectedStock.name}
-          </h2>
-
+          <h2>{selectedStock.name}</h2>
           <div className="stock-details">
-
             <p>
-              Symbol:
-              <strong>
-                {selectedStock.symbol}
-              </strong>
+              Symbol: <strong>{selectedStock.symbol}</strong>
             </p>
-
             <p>
-              Exchange:
-              <strong>
-                NSE
-              </strong>
+              Exchange: <strong>NSE</strong>
             </p>
-
           </div>
 
-
           <div className="quantity-section">
-
             <input
               type="number"
               min="1"
               placeholder="Quantity"
               value={quantity}
-              onChange={(e) =>
-                setQuantity(e.target.value)
-              }
+              onChange={(e) => setQuantity(e.target.value)}
             />
-
-            <button
-              onClick={addToPortfolio}
-            >
-              Add to Portfolio
-            </button>
-
+            <button onClick={addToPortfolio}>Add to Portfolio</button>
           </div>
-
         </div>
-
       )}
 
-
-      {/* =========================
-          PORTFOLIO
-      ========================== */}
-
+      {/* Portfolio */}
       <div className="portfolio">
-
         <div className="portfolio-header">
-
           <div>
-
-            <h1>
-              My Portfolio
-            </h1>
-
-            <p>
-              Manage your stock holdings
-            </p>
-
+            <h1>My Portfolio</h1>
+            <p>Manage your stock holdings</p>
           </div>
-
-          <span>
-            {portfolio.length} Stocks
-          </span>
-
+          <span>{portfolio.length} Stocks</span>
         </div>
 
-
-        {/* Empty portfolio */}
-
         {portfolio.length === 0 ? (
-
           <div className="empty-portfolio">
-
-            <h3>
-              Your portfolio is empty
-            </h3>
-
-            <p>
-              Search for a stock above and add
-              it to your portfolio.
-            </p>
-
+            <h3>Your portfolio is empty</h3>
+            <p>Search for a stock above and add it to your portfolio.</p>
           </div>
-
         ) : (
-
           <>
-
-            {/* Portfolio summary */}
-
             <div className="portfolio-summary">
-
               <div className="summary-card">
-
-                <span>
-                  Total Holdings
-                </span>
-
-                <strong>
-                  {portfolio.length}
-                </strong>
-
+                <span>Total Holdings</span>
+                <strong>{portfolio.length}</strong>
               </div>
-
-
               <div className="summary-card">
-
-                <span>
-                  Total Quantity
-                </span>
-
-                <strong>
-                  {totalQuantity}
-                </strong>
-
+                <span>Total Quantity</span>
+                <strong>{totalQuantity}</strong>
               </div>
-
             </div>
 
-
-            {/* Portfolio stocks */}
-
             <div className="portfolio-list">
-
               {portfolio.map((stock) => {
-
                 const allocation =
                   totalQuantity > 0
-                    ? (
-                        (stock.quantity /
-                          totalQuantity) *
-                        100
-                      ).toFixed(2)
+                    ? ((stock.quantity / totalQuantity) * 100).toFixed(2)
                     : "0.00";
 
                 return (
-
-                  <div
-                    className="portfolio-stock"
-                    key={stock.symbol}
-                  >
-
+                  <div className="portfolio-stock" key={stock.symbol}>
                     <div className="portfolio-stock-info">
-
-                      <h3>
-                        {stock.symbol}
-                      </h3>
-
-                      <p>
-                        {stock.name}
-                      </p>
-
+                      <h3>{stock.symbol}</h3>
+                      <p>{stock.name}</p>
                     </div>
-
-
                     <div className="holding">
-
-                      <span>
-                        Quantity
-                      </span>
-
-                      <strong>
-                        {stock.quantity}
-                      </strong>
-
+                      <span>Quantity</span>
+                      <strong>{stock.quantity}</strong>
                     </div>
-
-
                     <div className="allocation">
-
-                      <span>
-                        Allocation
-                      </span>
-
-                      <strong>
-                        {allocation}%
-                      </strong>
-
+                      <span>Allocation</span>
+                      <strong>{allocation}%</strong>
                     </div>
-
-
                     <button
                       className="remove"
-                      onClick={() =>
-                        removeStock(
-                          stock.symbol
-                        )
-                      }
+                      onClick={() => removeStock(stock.symbol)}
                     >
                       Remove
                     </button>
-
                   </div>
-
                 );
               })}
-
             </div>
-
-
-            {/* =========================
-                ANALYZE PORTFOLIO
-            ========================== */}
 
             <button
               className="analyze-button"
               onClick={analyzePortfolio}
               disabled={loading}
             >
-
-              {loading
-                ? "Analyzing Portfolio..."
-                : "Analyze Portfolio"}
-
+              {loading ? "Analyzing Portfolio..." : "Analyze Portfolio"}
             </button>
 
-
-            {/* =========================
-                ANALYSIS RESULT
-            ========================== */}
-
-            {analysis && (
-
-              <div className="analysis-card">
-
-                <div className="analysis-header">
-
-                  <div>
-
-                    <h2>
-                      Portfolio Analysis
-                    </h2>
-
-                    <p>
-                      Recent market news and
-                      FinGPT analysis
-                    </p>
-
-                  </div>
-
-                  <span>
-                    FinGPT
-                  </span>
-
-                </div>
-
-
-                {analysis.map((stock) => (
-
-                  <div
-                    className="stock-analysis"
-                    key={stock.symbol}
-                  >
-
-                    {/* Stock header */}
-
-                    <div className="stock-analysis-header">
-
-                      <div>
-
-                        <h3>
-                          {stock.symbol}
-                        </h3>
-
-                        <p>
-                          {stock.company}
-                        </p>
-
-                      </div>
-
-                      <span>
-                        Quantity: {stock.quantity}
-                      </span>
-
-                    </div>
-
-
-                    {/* News */}
-
-                    <div className="news-section">
-
-                      <h4>
-                        Recent News
-                      </h4>
-
-
-                      {stock.news &&
-                      stock.news.length > 0 ? (
-
-                        stock.news.map(
-                          (article, index) => (
-
-                            <div
-                              className="news-item"
-                              key={index}
-                            >
-
-                              <strong>
-                                {article.title}
-                              </strong>
-
-                              <small>
-                                {article.source}
-                                {" | "}
-                                {article.posted}
-                              </small>
-
-                            </div>
-
-                          )
-                        )
-
-                      ) : (
-
-                        <p className="no-news">
-                          No recent news found.
-                        </p>
-
-                      )}
-
-                    </div>
-
-
-                    {/* FinGPT */}
-
-                    <div className="fingpt-analysis">
-
-                      <h4>
-                        FinGPT Analysis
-                      </h4>
-
-                      <pre>
-                        {stock.analysis}
-                      </pre>
-
-                    </div>
-
-                  </div>
-
-                ))}
-
+            {/* Loading Indicator */}
+            {loading && (
+              <div className="loading-indicator">
+                <div className="loading-spinner"></div>
+                <p>Fetching news and analyzing sentiment...</p>
               </div>
-
             )}
 
+            {/* Analysis Result */}
+            {analysis && (
+              <div className="analysis-card">
+                <div className="analysis-header">
+                  <div>
+                    <h2>Portfolio Analysis</h2>
+                    <p>Recent market news and AI-driven insights</p>
+                  </div>
+                  <span>FinGPT</span>
+                </div>
+
+                {analysis.map((stock) => {
+                  let cleanAnalysis = stock.analysis || "No analysis available.";
+
+                  cleanAnalysis = cleanAnalysis
+                    .replace(/\[INST\][\s\S]*?\[\/INST\]/g, "")
+                    .trim();
+
+                  return (
+                    <div className="stock-analysis" key={stock.symbol}>
+                      <div className="stock-analysis-header">
+                        <div>
+                          <h3>{stock.symbol}</h3>
+                          <p>{stock.company}</p>
+                        </div>
+                        <span>Quantity: {stock.quantity}</span>
+                      </div>
+
+                      <div className="news-section">
+                        <h4>Recent News</h4>
+                        {stock.news && stock.news.length > 0 ? (
+                          stock.news.map((article, index) => (
+                            <div className="news-item" key={index}>
+                              <strong>{article.title}</strong>
+                              <small>
+                                {article.source} | {article.posted}
+                              </small>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="no-news">No recent news found.</p>
+                        )}
+                      </div>
+
+                      <div className="fingpt-analysis">
+                        <h4>AI Analysis</h4>
+                        <div className="analysis-content">
+                          {cleanAnalysis.split("\n").map((line, idx) => (
+                            <p key={idx}>{line}</p>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </>
-
         )}
-
       </div>
-
     </div>
   );
 }
