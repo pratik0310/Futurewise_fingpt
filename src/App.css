@@ -8,7 +8,7 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background: #0f1117;
   color: #e8edf5;
   line-height: 1.6;
@@ -22,7 +22,7 @@ body {
 }
 
 /* ============================================================
-   SEARCH CONTAINER
+   SEARCH
 ============================================================ */
 .search-container {
   background: #1a1d27;
@@ -45,12 +45,11 @@ body {
 }
 
 .search-label {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 600;
   color: #8b93a8;
   letter-spacing: 0.3px;
   text-transform: uppercase;
-  font-size: 11px;
 }
 
 .search-box input {
@@ -72,12 +71,8 @@ body {
 .search-box input:focus {
   border-color: #6c63ff;
   box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.12);
-  background: #0f1117;
 }
 
-/* ============================================================
-   SEARCH RESULTS
-============================================================ */
 .results {
   position: absolute;
   top: 100%;
@@ -152,9 +147,6 @@ body {
   border: 1px solid #1f222e;
 }
 
-/* ============================================================
-   NO RESULTS
-============================================================ */
 .no-results {
   padding: 20px 24px;
   background: #0f1117;
@@ -186,19 +178,23 @@ body {
   border: 1px solid #2a2d3a;
   margin-bottom: 24px;
   border-left: 4px solid #6c63ff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .selected-stock h2 {
   font-size: 22px;
   font-weight: 600;
   color: #e8edf5;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .stock-details {
   display: flex;
   gap: 24px;
-  margin-bottom: 18px;
 }
 
 .stock-details p {
@@ -315,18 +311,97 @@ body {
 }
 
 /* ============================================================
-   PORTFOLIO SUMMARY
+   PORTFOLIO LAYOUT
 ============================================================ */
+.portfolio-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.portfolio-chart {
+  background: #0f1117;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #1f222e;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.portfolio-chart h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6a7288;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.pie-chart-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.pie-chart-canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+.pie-legend {
+  margin-top: 12px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 16px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #8b93a8;
+}
+
+.legend-color {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.legend-label {
+  flex: 1;
+  font-weight: 500;
+}
+
+.legend-value {
+  font-size: 11px;
+  color: #5a6278;
+}
+
+/* ============================================================
+   PORTFOLIO LIST
+============================================================ */
+.portfolio-list-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .portfolio-summary {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-  margin-bottom: 20px;
 }
 
 .summary-card {
   background: #0f1117;
-  padding: 16px 20px;
+  padding: 14px 18px;
   border-radius: 10px;
   display: flex;
   justify-content: space-between;
@@ -344,14 +419,26 @@ body {
   color: #e8edf5;
 }
 
-/* ============================================================
-   PORTFOLIO LIST
-============================================================ */
 .portfolio-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-bottom: 20px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.portfolio-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.portfolio-list::-webkit-scrollbar-track {
+  background: #0f1117;
+}
+
+.portfolio-list::-webkit-scrollbar-thumb {
+  background: #2a2d3a;
+  border-radius: 4px;
 }
 
 .portfolio-stock {
@@ -359,7 +446,7 @@ body {
   grid-template-columns: 2fr 1fr 1fr auto;
   align-items: center;
   gap: 16px;
-  padding: 14px 18px;
+  padding: 12px 16px;
   background: #0f1117;
   border-radius: 10px;
   transition: background 0.15s;
@@ -389,7 +476,7 @@ body {
 
 .holding span,
 .allocation span {
-  font-size: 11px;
+  font-size: 10px;
   color: #5a6278;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -432,6 +519,7 @@ body {
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s, opacity 0.2s;
+  margin-top: 8px;
 }
 
 .analyze-button:hover:not(:disabled) {
@@ -444,7 +532,7 @@ body {
 }
 
 /* ============================================================
-   LOADING INDICATOR
+   LOADING
 ============================================================ */
 .loading-indicator {
   display: flex;
@@ -512,6 +600,7 @@ body {
   border: 1px solid #6c63ff33;
 }
 
+/* Stock Analysis */
 .stock-analysis {
   background: #0f1117;
   border-radius: 10px;
@@ -544,14 +633,31 @@ body {
   color: #6a7288;
 }
 
-.stock-analysis-header > span {
+.analysis-badges {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.analysis-quantity {
   font-size: 13px;
   color: #8b93a8;
   font-weight: 500;
 }
 
+.sentiment-badge {
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid;
+  letter-spacing: 0.3px;
+}
+
+/* News */
 .news-section {
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
 .news-section h4 {
@@ -564,7 +670,7 @@ body {
 }
 
 .news-item {
-  padding: 12px 16px;
+  padding: 10px 14px;
   background: #1a1d27;
   border-radius: 8px;
   margin-bottom: 6px;
@@ -595,15 +701,79 @@ body {
   padding: 8px 0;
 }
 
-.fingpt-analysis h4 {
-  font-size: 12px;
-  font-weight: 600;
-  color: #6a7288;
-  margin-bottom: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+/* ============================================================
+   ANALYSIS SECTIONS (Separated)
+============================================================ */
+.analysis-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
+.analysis-section {
+  background: #0f1117;
+  border-radius: 10px;
+  padding: 14px 18px;
+  border: 1px solid #1f222e;
+}
+
+.analysis-section .section-title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.positive-title {
+  color: #10b981;
+}
+
+.concerns-title {
+  color: #ef4444;
+}
+
+.impact-title {
+  color: #f59e0b;
+}
+
+.section-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.section-list li {
+  padding: 4px 0 4px 20px;
+  position: relative;
+  font-size: 14px;
+  color: #d4dae8;
+  line-height: 1.6;
+}
+
+.section-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #6a7288;
+}
+
+.positive-section .section-list li::before {
+  color: #10b981;
+}
+
+.concerns-section .section-list li::before {
+  color: #ef4444;
+}
+
+.impact-text {
+  font-size: 14px;
+  color: #d4dae8;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* Fallback analysis content */
 .analysis-content {
   background: #1a1d27;
   border-radius: 8px;
@@ -627,40 +797,30 @@ body {
 /* ============================================================
    RESPONSIVE
 ============================================================ */
+@media (max-width: 992px) {
+  .portfolio-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .portfolio-chart {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+}
+
 @media (max-width: 768px) {
   .app {
     padding: 16px 12px;
   }
 
-  .portfolio-stock {
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    padding: 14px;
-  }
-
-  .portfolio-stock-info {
-    grid-column: 1 / -1;
-  }
-
-  .remove {
-    grid-column: 1 / -1;
-    justify-self: end;
-  }
-
-  .stock-analysis-header {
+  .selected-stock {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
+    align-items: stretch;
   }
 
-  .summary-card {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-  }
-
-  .selected-stock h2 {
-    font-size: 18px;
+  .stock-details {
+    flex-wrap: wrap;
+    gap: 12px;
   }
 
   .quantity-section {
@@ -679,12 +839,28 @@ body {
     padding: 18px 16px;
   }
 
-  .selected-stock {
-    padding: 18px 16px;
+  .portfolio-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
   }
 
-  .search-container {
-    padding: 18px 16px;
+  .portfolio-stock {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .portfolio-stock-info {
+    grid-column: 1 / -1;
+  }
+
+  .remove {
+    grid-column: 1 / -1;
+    justify-self: end;
+  }
+
+  .portfolio-summary {
+    grid-template-columns: 1fr;
   }
 
   .analysis-header {
@@ -693,19 +869,26 @@ body {
     gap: 8px;
   }
 
-  .stock-details {
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .portfolio-header {
+  .stock-analysis-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
   }
 
-  .portfolio-summary {
+  .analysis-badges {
+    width: 100%;
+  }
+
+  .pie-legend {
     grid-template-columns: 1fr;
+  }
+
+  .search-container {
+    padding: 18px 16px;
+  }
+
+  .analysis-section {
+    padding: 12px 14px;
   }
 }
 
@@ -735,5 +918,17 @@ body {
   .analysis-content {
     padding: 12px 14px;
     font-size: 13px;
+  }
+
+  .selected-stock {
+    padding: 16px;
+  }
+
+  .selected-stock h2 {
+    font-size: 18px;
+  }
+
+  .portfolio-chart {
+    padding: 12px;
   }
 }
