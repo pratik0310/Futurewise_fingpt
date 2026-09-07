@@ -9,24 +9,33 @@ function App() {
   const [portfolio, setPortfolio] = useState([]);
   const [analysis, setAnalysis] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+
+  // Debug: Check stocks
+  useEffect(() => {
+    console.log("📊 Total stocks loaded:", stocks?.length || 0);
+    const nseCount = stocks?.filter(s => s.exchange === "NSE").length || 0;
+    const usCount = stocks?.filter(s => s.exchange === "US").length || 0;
+    console.log(`   🇮🇳 NSE: ${nseCount}, 🇺🇸 US: ${usCount}`);
+    if (stocks && stocks.length > 0) {
+      console.log("📌 First 3 stocks:", stocks.slice(0, 3));
+    }
+  }, []);
 
   // Search results
-  const results =
-    search.trim() === ""
-      ? []
-      : stocks
-          .filter((stock) => {
-            const query = search.toLowerCase();
-            return (
-              String(stock.name || "").toLowerCase().includes(query) ||
-              String(stock.symbol || "").toLowerCase().includes(query)
-            );
-          })
-          .slice(0, 10);
+  const results = search.trim() === "" ? [] : stocks
+    .filter((stock) => {
+      const query = search.toLowerCase();
+      const name = String(stock.name || "").toLowerCase();
+      const symbol = String(stock.symbol || "").toLowerCase();
+      return name.includes(query) || symbol.includes(query);
+    })
+    .slice(0, 15);
 
   const selectStock = (stock) => {
     setSelectedStock(stock);
     setSearch(stock.name);
+    setShowResults(false);
   };
 
   const addToPortfolio = () => {
@@ -60,6 +69,7 @@ function App() {
         {
           symbol: selectedStock.symbol,
           name: selectedStock.name,
+          exchange: selectedStock.exchange || "NSE",
           quantity: qty,
         },
       ]);
@@ -68,6 +78,7 @@ function App() {
     setQuantity("");
     setSearch("");
     setSelectedStock(null);
+    setShowResults(false);
   };
 
   const removeStock = (symbol) => {
@@ -87,7 +98,7 @@ function App() {
 
     setLoading(true);
     setAnalysis(null);
-
+    
     try {
       const response = await fetch(
         "https://unfunded-proven-caretaker.ngrok-free.dev/analyze-portfolio",
@@ -333,6 +344,13 @@ function App() {
     }
   };
 
+  // Get exchange badge color
+  const getExchangeColor = (exchange) => {
+    if (exchange === "NSE") return "#6c63ff";
+    if (exchange === "US") return "#10b981";
+    return "#6c63ff";
+  };
+
   return (
     <div className="app">
       {/* Search Section */}
@@ -346,11 +364,14 @@ function App() {
             onChange={(e) => {
               setSearch(e.target.value);
               setSelectedStock(null);
+              setShowResults(true);
             }}
+            onFocus={() => setShowResults(true)}
+            onBlur={() => setTimeout(() => setShowResults(false), 200)}
           />
         </div>
 
-        {results.length > 0 && (
+        {showResults && search && results.length > 0 && (
           <div className="results">
             {results.map((stock) => (
               <div
@@ -362,13 +383,25 @@ function App() {
                   <div className="stock-name">{stock.name}</div>
                   <div className="stock-symbol">{stock.symbol}</div>
                 </div>
-                <span className="exchange">NSE</span>
+                <span 
+                  className="exchange"
+                  style={{
+                    background: getExchangeColor(stock.exchange),
+                    color: "#fff",
+                    padding: "2px 8px",
+                    borderRadius: "12px",
+                    fontSize: "11px",
+                    fontWeight: "bold"
+                  }}
+                >
+                  {stock.exchange || "NSE"}
+                </span>
               </div>
             ))}
           </div>
         )}
 
-        {search && results.length === 0 && (
+        {showResults && search && results.length === 0 && (
           <div className="no-results">
             <span className="no-results-query">"{search}"</span>
             <span> did not match any stocks.</span>
@@ -389,7 +422,7 @@ function App() {
                 Symbol: <strong>{selectedStock.symbol}</strong>
               </p>
               <p>
-                Exchange: <strong>NSE</strong>
+                Exchange: <strong>{selectedStock.exchange || "NSE"}</strong>
               </p>
             </div>
           </div>
@@ -452,6 +485,15 @@ function App() {
                       <div className="portfolio-stock-info">
                         <h3>{stock.symbol}</h3>
                         <p>{stock.name}</p>
+                        <span 
+                          style={{
+                            fontSize: "11px",
+                            color: getExchangeColor(stock.exchange),
+                            fontWeight: "bold"
+                          }}
+                        >
+                          {stock.exchange || "NSE"}
+                        </span>
                       </div>
                       <div className="holding">
                         <span>Quantity</span>
@@ -494,9 +536,7 @@ function App() {
           </div>
         )}
 
-        {/* ============================================================
-            ANALYSIS RESULT WITH SEPARATE SECTIONS
-            ============================================================ */}
+        {/* Analysis Result */}
         {analysis && (
           <div className="analysis-card">
             <div className="analysis-header">
